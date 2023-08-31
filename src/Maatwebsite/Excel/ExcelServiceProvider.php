@@ -26,4 +26,5 @@ class ExcelServiceProvider extends ServiceProvider
             return new ImporterFactory();
         });
     }
+
 }
