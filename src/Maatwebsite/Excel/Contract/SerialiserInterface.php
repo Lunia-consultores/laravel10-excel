@@ -1,5 +1,5 @@
 <?php
-namespace Cyberduck\LaravelExcel\Contract;
+namespace Maatwebsite\LaravelExcel\Contract;
 
 interface SerialiserInterface
 {

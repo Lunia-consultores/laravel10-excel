@@ -1,6 +1,7 @@
 <?php
+namespace Tests\Utils;
 
-use Cyberduck\LaravelExcel\Contract\SerialiserInterface;
+use Maatwebsite\LaravelExcel\Contract\SerialiserInterface;
 
 class FirstColumnOnlySerialiser implements SerialiserInterface
 {

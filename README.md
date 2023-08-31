@@ -1,52 +1,14 @@
-# Laravel Excel
-[![Latest Stable Version](https://poser.pugx.org/cyber-duck/laravel-excel/v/stable)](https://packagist.org/packages/cyber-duck/laravel-excel)
-[![Total Downloads](https://poser.pugx.org/cyber-duck/laravel-excel/downloads)](https://packagist.org/packages/cyber-duck/laravel-excel)
-[![License](https://poser.pugx.org/cyber-duck/laravel-excel/license)](https://raw.githubusercontent.com/Cyber-Duck/laravel-excel/master/LICENSE)
+# Laravel 10 Excel
 
-Exporting and importing Excel, CSV and OpenOffice stylesheets using Eloquent Collections and Query Builders in Laravel (5.* and 4.*).  
-It's based on [box/spout](https://github.com/box/spout).
-
-Author: [Simone Todaro](https://github.com/SimoTod)  
-Contributors: [Clément Blanco](https://github.com/Claymm)  
-Made with :heart: by [Cyber-Duck Ltd](http://www.cyber-duck.co.uk)
-
-[Installation](#installation)  
-[Export Excel](#export-excel)  
-[Import Excel](#import-excel)  
-[Different formats](#different-formats)  
+Fork from legacy Maatwebsite/Laravel-Excel to support Laravel 10
 
 ## Installation
-Use composer to download the package:
+
+Require this package with composer using the following command:
+
+```bash 
+composer require lunia-consultores/laravel-excel 
 ```
-composer require cyber-duck/laravel-excel
-```
-
-### Laravel 4.x
-
-Register the service provider in `config/app.php` by adding this line to providers array.
-
-```php
-'providers' => [
-	Cyberduck\LaravelExcel\ExcelLegacyServiceProvider::class,
-],
-```
-
-### Laravel < 5.5
-
-Register the service provider in `config/app.php` by adding this line to providers array.
-
-```php
-'providers' => [
-	Cyberduck\LaravelExcel\ExcelServiceProvider::class,
-],
-```
-
-### Laravel > 5.5
-
-No need to register anything, since it used package auto discovery feature in Laravel 5.5.
-
-## Export Excel
-
 ### Generate and download an excel file
 Add
 ```
@@ -61,7 +23,7 @@ $excel->load($yourCollection);
 return $excel->stream($yourFileName);
 ```
 
-The exporter class is fluent, so you can also write  
+The exporter class is fluent, so you can also write
 ```
 return Exporter::make('Excel')->load($yourCollection)->stream($yourFileName);
 ```
@@ -159,7 +121,7 @@ return Importer::make('Excel')->load($filepath)->getCollection();
 ```
 
 ### Advanced usage
-By default, every row of the first sheet of the excel file becomes an array and the final result is wraped in a Collection (Illuminate\Support\Collection).  
+By default, every row of the first sheet of the excel file becomes an array and the final result is wraped in a Collection (Illuminate\Support\Collection).
 
 To import a different sheet, use *setSheet($sheet)*
 ```
@@ -170,7 +132,7 @@ $collection = $excel->getCollection();
 //dd($collection)
 ```
 
-To import each row in an Eloquent model, create a class extending *Cyberduck\LaravelExcel\Contract\ParserInterface* and implement the methods *transform($row)*.  
+To import each row in an Eloquent model, create a class extending *Cyberduck\LaravelExcel\Contract\ParserInterface* and implement the methods *transform($row)*.
 
 Example
 ```

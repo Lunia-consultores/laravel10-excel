@@ -1,8 +1,8 @@
 <?php
-namespace Cyberduck\LaravelExcel\Serialiser;
+namespace Maatwebsite\LaravelExcel\Serialiser;
 
 use Illuminate\Database\Eloquent\Model;
-use Cyberduck\LaravelExcel\Contract\SerialiserInterface;
+use Maatwebsite\LaravelExcel\Contract\SerialiserInterface;
 
 class BasicSerialiser implements SerialiserInterface
 {
@@ -17,7 +17,7 @@ class BasicSerialiser implements SerialiserInterface
         }
     }
 
-    public function getHeaderRow()
+    public function getHeaderRow(): array
     {
         return [];
     }

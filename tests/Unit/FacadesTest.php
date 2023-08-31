@@ -1,11 +1,15 @@
 <?php
+namespace Tests\Unit;
 
-class ExporterFacadeTest extends TestCase
+use Maatwebsite\LaravelExcel\Factory\ExporterFactory;
+use TestCase;
+
+class FacadesTest extends TestCase
 {
     public function test_facades_are_available()
     {
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Factory\ExporterFactory::class,
+            ExporterFactory::class,
             Exporter::getFacadeRoot()
         );
         $this->assertInstanceOf(

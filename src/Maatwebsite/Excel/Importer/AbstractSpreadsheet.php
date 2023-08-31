@@ -1,20 +1,22 @@
 <?php
-namespace Cyberduck\LaravelExcel\Importer;
+
+namespace Maatwebsite\LaravelExcel\Importer;
 
 use Illuminate\Database\Eloquent\Model;
-use Cyberduck\LaravelExcel\Parser\BasicParser;
-use Cyberduck\LaravelExcel\Contract\ParserInterface;
-use Cyberduck\LaravelExcel\Contract\ImporterInterface;
+use Illuminate\Support\Collection;
+use Maatwebsite\LaravelExcel\Contract\ImporterInterface;
+use Maatwebsite\LaravelExcel\Contract\ParserInterface;
+use Maatwebsite\LaravelExcel\Parser\BasicParser;
 
 abstract class AbstractSpreadsheet implements ImporterInterface
 {
-    protected $path;
-    protected $type;
-    protected $parser;
-    protected $sheet;
-    protected $model;
-    protected $hasHeaderRow;
-    protected $callbacks;
+    protected string $path;
+    protected string $type;
+    protected BasicParser $parser;
+    protected int $sheet;
+    protected Model|bool $model;
+    protected int $hasHeaderRow;
+    protected Collection $callbacks;
 
     public function __construct()
     {
@@ -33,30 +35,30 @@ abstract class AbstractSpreadsheet implements ImporterInterface
         return $this;
     }
 
-    public function load($path)
+    public function load($path): static
     {
         $this->path = $path;
         return $this;
     }
 
-    public function setSheet($sheet)
+    public function setSheet($sheet): static
     {
         $this->sheet = $sheet;
         return $this;
     }
 
-    public function hasHeader($hasHeaderRow)
+    public function hasHeader($hasHeaderRow): void
     {
         $this->hasHeaderRow = $hasHeaderRow;
     }
 
-    public function setParser(ParserInterface $parser)
+    public function setParser(ParserInterface $parser): static
     {
         $this->parser = $parser;
         return $this;
     }
 
-    public function setModel(Model $model)
+    public function setModel(Model $model): static
     {
         $this->model = $model;
         return $this;
@@ -66,11 +68,12 @@ abstract class AbstractSpreadsheet implements ImporterInterface
 
     abstract public function createReader();
 
-    public function getCollection()
+    public function getCollection(): \Illuminate\Database\Eloquent\Collection|Collection
     {
         $headers = false;
 
         $reader = $this->open();
+        $collection = collect([]);
 
         foreach ($reader->getSheetIterator() as $index => $sheet) {
             if ($index !== $this->sheet) {
@@ -85,9 +88,9 @@ abstract class AbstractSpreadsheet implements ImporterInterface
                 } else {
                     $data = $this->parser->transform($row->toArray(), $headers);
 
-                    if ($data !== false) {
+                    if ($data) {
                         if ($this->model) {
-                            $data = $this->model->getQuery()->newInstance($data);
+                            $data = $this->model->newInstance($data);
                         }
 
                         $collection->push($data);
@@ -101,7 +104,7 @@ abstract class AbstractSpreadsheet implements ImporterInterface
         return $collection;
     }
 
-    public function save($updateIfEquals = [])
+    public function save($updateIfEquals = []): void
     {
         if (!$this->model) {
             return;
@@ -123,7 +126,7 @@ abstract class AbstractSpreadsheet implements ImporterInterface
                     $headers = $row->toArray();
                 } else {
                     $data = $this->parser->transform($row->toArray(), $headers);
-                    if ($data !== false) {
+                    if ($data) {
                         $relationships = [];
                         $when = array_intersect_key($data, $updateIfEquals);
                         $values = array_diff_key($data, $when);
@@ -135,14 +138,13 @@ abstract class AbstractSpreadsheet implements ImporterInterface
                             }
                         }
 
-                        if (!empty($when)) {
-                            $this->model->getQuery()->updateOrInsert($when, $values);
-                        } else {
-                            $this->model->getQuery()->insert($values);
+                        $uniqueBy = array_keys($when);
+                        if (!empty($uniqueBy)) {
+                            $this->model->query()->upsert($values, $uniqueBy, array_keys($values));
                         }
 
                         if (count($relationships)) {
-                            $model = $this->model->where($values)
+                            $model = $this->model->query()->where($values)
                                 ->orderBy($this->model->getKeyName(), 'desc')
                                 ->first();
                             foreach ($relationships as $key => $val) {
@@ -162,11 +164,11 @@ abstract class AbstractSpreadsheet implements ImporterInterface
     protected function open()
     {
         $reader = $this->createReader();
-        $this->callbacks->each(function ($elem) use (&reader) {
+        $this->callbacks->each(function ($elem) use (&$reader) {
             call_user_func_array(array($reader, $elem[0]), $elem[1]);
         });
         $reader->open($this->path);
-        
+
         return $reader;
     }
 }

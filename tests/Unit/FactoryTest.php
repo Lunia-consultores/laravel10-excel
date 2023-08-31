@@ -1,16 +1,22 @@
 <?php
+namespace Tests\Unit;
 
-use Cyberduck\LaravelExcel\Factory\ImporterFactory;
-use Cyberduck\LaravelExcel\Factory\ExporterFactory;
 
-class ImporterFactoryTest extends TestCase
+use Maatwebsite\LaravelExcel\Exporter\Excel;
+use Maatwebsite\LaravelExcel\Factory\ExporterFactory;
+use Maatwebsite\LaravelExcel\Factory\ImporterFactory;
+use Maatwebsite\LaravelExcel\Importer\Csv;
+use Maatwebsite\LaravelExcel\Importer\OpenOffice;
+use TestCase;
+
+class FactoryTest extends TestCase
 {
     public function test_factory_can_create_csv()
     {
         $factory = new ImporterFactory();
         $spreadsheet = $factory->make('Csv');
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Importer\Csv::class,
+            Csv::class,
             $spreadsheet
         );
         $this->assertEquals(
@@ -24,7 +30,7 @@ class ImporterFactoryTest extends TestCase
         $factory = new ImporterFactory();
         $spreadsheet = $factory->make('OpenOffice');
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Importer\OpenOffice::class,
+            OpenOffice::class,
             $factory->make('OpenOffice')
         );
         $this->assertEquals(
@@ -38,7 +44,7 @@ class ImporterFactoryTest extends TestCase
         $factory = new ImporterFactory();
         $spreadsheet = $factory->make('Excel');
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Importer\Excel::class,
+            Excel::class,
             $factory->make('Excel')
         );
         $this->assertEquals(
@@ -51,7 +57,7 @@ class ImporterFactoryTest extends TestCase
         $factory = new ExporterFactory();
         $spreadsheet = $factory->make('Csv');
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Exporter\Csv::class,
+            \Maatwebsite\LaravelExcel\Exporter\Csv::class,
             $spreadsheet
         );
         $this->assertEquals(
@@ -65,7 +71,7 @@ class ImporterFactoryTest extends TestCase
         $factory = new ExporterFactory();
         $spreadsheet = $factory->make('OpenOffice');
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Exporter\OpenOffice::class,
+            \Maatwebsite\LaravelExcel\Exporter\OpenOffice::class,
             $spreadsheet
         );
         $this->assertEquals(
@@ -79,7 +85,7 @@ class ImporterFactoryTest extends TestCase
         $factory = new ExporterFactory();
         $spreadsheet = $factory->make('Excel');
         $this->assertInstanceOf(
-            \Cyberduck\LaravelExcel\Exporter\Excel::class,
+            \Maatwebsite\LaravelExcel\Exporter\Excel::class,
             $spreadsheet
         );
         $this->assertEquals(

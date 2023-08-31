@@ -1,7 +1,9 @@
 <?php
+ namespace Tests\Unit;
 
-use Cyberduck\LaravelExcel\Factory\ImporterFactory;
+use TestCase;
 
 abstract class ImporterTest extends TestCase
 {
+
 }

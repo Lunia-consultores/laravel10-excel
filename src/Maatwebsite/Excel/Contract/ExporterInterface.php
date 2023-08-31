@@ -1,8 +1,8 @@
 <?php
-namespace Cyberduck\LaravelExcel\Contract;
+namespace Maatwebsite\LaravelExcel\Contract;
 
-use Illuminate\Support\Collection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
 
 interface ExporterInterface
 {

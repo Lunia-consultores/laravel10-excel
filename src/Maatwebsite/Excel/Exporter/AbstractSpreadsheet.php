@@ -1,20 +1,20 @@
 <?php
-namespace Cyberduck\LaravelExcel\Exporter;
+namespace Maatwebsite\LaravelExcel\Exporter;
 
-use Illuminate\Support\Collection;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Illuminate\Database\Query\Builder;
-use Cyberduck\LaravelExcel\Serialiser\BasicSerialiser;
-use Cyberduck\LaravelExcel\Contract\SerialiserInterface;
-use Cyberduck\LaravelExcel\Contract\ExporterInterface;
+use Illuminate\Support\Collection;
+use Maatwebsite\LaravelExcel\Contract\ExporterInterface;
+use Maatwebsite\LaravelExcel\Contract\SerialiserInterface;
+use Maatwebsite\LaravelExcel\Serialiser\BasicSerialiser;
 
 abstract class AbstractSpreadsheet implements ExporterInterface
 {
-    protected $data;
-    protected $type;
+    protected mixed $data;
+    protected string $type;
     protected $serialiser;
-    protected $chuncksize;
-    protected $callbacks;
+    protected int $chuncksize;
+    protected Collection $callbacks;
 
     public function __construct()
     {
@@ -30,25 +30,25 @@ abstract class AbstractSpreadsheet implements ExporterInterface
         return $this;
     }
 
-    public function load(Collection $data)
+    public function load(Collection $data): static
     {
         $this->data = $data;
         return $this;
     }
 
-    public function loadQuery(Builder $query)
+    public function loadQuery(Builder $query): static
     {
         $this->data = $query;
         return $this;
     }
 
-    public function setChunk($size)
+    public function setChunk($size): static
     {
         $this->chunksize = $size;
         return $this;
     }
 
-    public function setSerialiser(SerialiserInterface $serialiser)
+    public function setSerialiser(SerialiserInterface $serialiser): static
     {
         $this->serialiser = $serialiser;
         return $this;
@@ -58,7 +58,7 @@ abstract class AbstractSpreadsheet implements ExporterInterface
 
     abstract public function createWriter();
 
-    public function save($filename)
+    public function save($filename): void
     {
         $writer = $this->create();
         $writer->openToFile($filename);
@@ -66,7 +66,7 @@ abstract class AbstractSpreadsheet implements ExporterInterface
         $writer->close();
     }
 
-    public function stream($filename)
+    public function stream($filename): void
     {
         $writer = $this->create();
         $writer->openToBrowser($filename);
@@ -91,8 +91,10 @@ abstract class AbstractSpreadsheet implements ExporterInterface
             $writer->addRow($row);
         }
         if ($this->data instanceof Builder) {
-            if (isset($this->chuncksize)) {
-                $this->data->chunk($this->chuncksize);
+            if (isset($this->chunksize)) {
+                $this->data->chunk($this->chunksize, function ($records) use ($writer) {
+                    $this->addRowsDataToWriter($records, $writer);
+                });
             } else {
                 $this->addRowsDataToWriter($this->data->get(), $writer);
             }
@@ -102,7 +104,7 @@ abstract class AbstractSpreadsheet implements ExporterInterface
         return $writer;
     }
 
-    public function addRowsDataToWriter($data, $writer)
+    public function addRowsDataToWriter($data, $writer): void
     {
         foreach ($data as $record) {
             $recordData = $this->serialiser->getData($record);
