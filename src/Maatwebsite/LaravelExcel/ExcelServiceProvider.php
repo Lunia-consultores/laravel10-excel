@@ -3,10 +3,8 @@ namespace Maatwebsite\LaravelExcel;
 
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
-use Maatwebsite\LaravelExcel\ExporterFacade;
 use Maatwebsite\LaravelExcel\Factory\ExporterFactory;
 use Maatwebsite\LaravelExcel\Factory\ImporterFactory;
-use Maatwebsite\LaravelExcel\ImporterFacade;
 
 class ExcelServiceProvider extends ServiceProvider
 {
